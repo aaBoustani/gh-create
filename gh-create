@@ -2,8 +2,7 @@
 
 # use github config in .gitconfig to create a repo on Github
 
-# TODO Refactor code to use oneliners
-readJson () {
+readJSON () {
   UNAMESTR=`uname`
   if [ "$UNAMESTR" = "Linux" ]
   then
@@ -18,28 +17,46 @@ readJson () {
   echo $VALUE
 }
 
-# TODO if repo is not given use current dir
-# TODO handle private repo
-repo=$1
-token=`git config github.token`
+repo_default=${1:-${PWD##*/}}
+read -p "Repository ($repo_default): " repo
+repo=${repo:-$repo_default}
 
+read -p "Private (false): " private
+private=${private:-false}
+
+read -p "Description ($desc): " desc
+desc=${desc:-}
+
+echo
+
+token=`git config github.token`
 if [ -z token ]
 then
   echo "Missing github token in gitconfig"
+  echo
+  echo "git config --global github.token <github_token>"
   exit 1
 fi
 
-ssh_url=`curl -s https://api.github.com/user/repos -H "Authorization: token $token" -d "{\"name\":\"$repo\"}" |
-  readJson ssh_url`
+ssh_url=`curl -s https://api.github.com/user/repos -H "Authorization: token $token" -d "{\"name\":\"$repo\",\"private\":$private,\"description\":\"$desc\"}" |
+  readJSON ssh_url`
 
-if [ ! "$ssh_url" ]
+if [ -z "$ssh_url" ]
 then
   echo "ERROR: Repo was not created."
-  echo "Tip: Make sure that the name is unique"
+  echo "Tip: Make sure that the name of the repo is unique"
   exit 1
 fi
 
 echo "Github repo successfully created!"
-echo "Remote to $ssh_url"
+echo
+echo "Next:"
+echo "    echo \"# $repo\" >> README.md"
+echo "    git init"
+echo "    git add README.md"
+echo "    git commit -m \"first commit\""
+echo "    git remote add origin $ssh_url"
+echo "    git push --set-upstream origin master "
+echo
 exit 0
 

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# use github config in .gitconfig to create a repo on Github
+
+# TODO Refactor code to use oneliners
+readJson () {
+  UNAMESTR=`uname`
+  if [ "$UNAMESTR" = "Linux" ]
+  then
+    SED_EXTENDED='-r'
+  elif [ "$UNAMESTR" = "Darwin" ]
+  then
+    SED_EXTENDED='-E'
+  fi
+
+  VALUE=`grep -m 1 "\"$1\"" ${2} | sed ${SED_EXTENDED} 's/^ *//;s/.*: *"//;s/",?//'`
+
+  echo $VALUE
+}
+
+# TODO if repo is not given use current dir
+# TODO handle private repo
+repo=$1
+token=`git config github.token`
+
+if [ -z token ]
+then
+  echo "Missing github token in gitconfig"
+  exit 1
+fi
+
+ssh_url=`curl -s https://api.github.com/user/repos -H "Authorization: token $token" -d "{\"name\":\"$repo\"}" |
+  readJson ssh_url`
+
+if [ ! "$ssh_url" ]
+then
+  echo "ERROR: Repo was not created."
+  echo "Tip: Make sure that the name is unique"
+  exit 1
+fi
+
+echo "Github repo successfully created!"
+echo "Remote to $ssh_url"
+exit 0
+

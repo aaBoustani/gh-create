@@ -17,18 +17,6 @@ readJSON () {
   echo $VALUE
 }
 
-repo_default=${1:-${PWD##*/}}
-read -p "Repository ($repo_default): " repo
-repo=${repo:-$repo_default}
-
-read -p "Private (false): " private
-private=${private:-false}
-
-read -p "Description ($desc): " desc
-desc=${desc:-}
-
-echo
-
 token=`git config github.token`
 if [ -z token ]
 then
@@ -38,8 +26,25 @@ then
   exit 1
 fi
 
+repo_default=${1:-${PWD##*/}}
+read -p "Repository ($repo_default): " repo
+repo=${repo:-$repo_default}
+
+declare -A opts=( ["y"]=true ["Y"]=true )
+read -p "Private [y/N]: " private
+opt=${opts[$private]}
+private=${opt:-false}
+
+echo $private
+exit 0
+
+read -p "Description ($desc): " desc
+desc=${desc:-}
+
+echo
+
 ssh_url=`curl -s https://api.github.com/user/repos -H "Authorization: token $token" -d "{\"name\":\"$repo\",\"private\":$private,\"description\":\"$desc\"}" |
-  readJSON ssh_url`
+readJSON ssh_url`
 
 if [ -z "$ssh_url" ]
 then

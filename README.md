@@ -16,7 +16,8 @@ A bash script that creates a repo on Github from the command line
 ## Usage
 `gh-create <repo_name (optional)>`  
 Then follow prompt.  
-Note: Make sure that the repository name is unique inside your 
+**Note**: Make sure that the repository name is unique inside your workspace
 
 ## Dependencies
 - curl
+- Bash 4

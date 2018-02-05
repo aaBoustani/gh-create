@@ -6,8 +6,8 @@ A bash script that creates a repo on Github from the command line
 
 ### wget
 `wget -O - https://raw.githubusercontent.com/AhmedBoustani/gh-create/master/gh-create > gh-create`  
-`chmod +x gh-create`  
-`sudo ln -s gh-create /usr/bin`
+`chmod +x ./gh-create`  
+`sudo ln -s /path/to/dir/gh-create /usr/bin`
 
 ## Set up
 1. Generate Github token https://docs.cachethq.io/v1.0/docs/github-oauth-token

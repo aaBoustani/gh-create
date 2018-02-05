@@ -30,10 +30,10 @@ repo_default=${1:-${PWD##*/}}
 read -p "Repository ($repo_default): " repo
 repo=${repo:-$repo_default}
 
-declare -A opts=( ["y"]=true ["Y"]=true )
-read -p "Private (y/N): " private
-opt=${opts[$private]}
-private=${opt:-false}
+declare -A options=( ["y"]=true ["Y"]=true )
+read -p "Private (y/N): " opt
+private=$([ $opt ] && echo ${options[$opt]})
+private=${private:-false}
 
 read -p "Description ($desc): " desc
 desc=${desc:-}
